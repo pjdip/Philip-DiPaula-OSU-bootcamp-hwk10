@@ -90,19 +90,7 @@ const newEmployee = role => {
                 const squadIntern = new Intern(response.name, response.id, response.email, response.school);
                 employeeList.push(squadIntern);
             });
-        }
-}
-
-const render = empList => {
-    empList.forEach(employee => {
-        if (employee.getRole() === "Manager") {
-
-        } else if (employee.getRole() === "Engineer") {
-
-        } else if (employee.getRole() === "Intern") {
-            
-        }
-    });
+    }
 }
 
 // Write code to use inquirer to gather information about the development team members,
@@ -121,7 +109,10 @@ function init() {
                 } else {newEmployee(response.role)}
             });
     }
+    fs.writeFile('./output/team.html', render(employeeList), (err) => 
+        err ? console.error(err) : console.log('team page created!'));
 }
+
 init();
 
 
