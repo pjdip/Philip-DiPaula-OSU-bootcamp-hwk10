@@ -10,13 +10,15 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+let teamManaged = false;
+
 const employeeList = [];
 const roles = ["Manager", "Engineer", "Intern", "Finished Building Team"];
 
 const employeeBasics = [
     {
         type: 'input',
-        message: "What is team member's name? ",
+        message: "What is the team member's name? ",
         name: 'name',
     },
     {
@@ -58,21 +60,22 @@ const internInfo = [
 const roleChoice = [
     {
         type: 'list',
-        message: 'Please choose a new member role to add to your team:',
+        message: '\n Please choose a new member role to add to your team:',
         choices: roles,
         name: 'role',
     }
 ];
 
-const newEmployee = role => {
+function newEmployee(role) {
     if (role === "Manager") {
         const questions = employeeBasics.concat(managerInfo);
         inquirer
             .prompt(questions)
             .then(response => {
                 teamManaged = true;
-                const squadLeader = new Manager(response.name, response.id, respone.email, response.officeNumber);
+                const squadLeader = new Manager(response.name, response.id, response.email, response.officeNumber);
                 employeeList.push(squadLeader);
+                init();
             });
     } else if (role === "Engineer") {
         const questions = employeeBasics.concat(engineerInfo);
@@ -81,6 +84,7 @@ const newEmployee = role => {
             .then(response => {
                 const squadEngineer = new Engineer(response.name, response.id, response.email, response.github);
                 employeeList.push(squadEngineer);
+                init();
             });
     } else if (role === "Intern") {
         const questions = employeeBasics.concat(internInfo);
@@ -89,28 +93,36 @@ const newEmployee = role => {
             .then(response => {
                 const squadIntern = new Intern(response.name, response.id, response.email, response.school);
                 employeeList.push(squadIntern);
+                init();
             });
     }
 }
 
+
+
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 function init() {
-    let buildingTeam = true;
-    let teamManaged = false;
-    while (buildingTeam === true) {
-        inquirer
-            .prompt(roleChoice)
-            .then(response => {
-                if (response.role === "Finished Building Team") {
-                    buildingTeam = false;
-                } else if (teamManaged === true) {
-                    console.log("This team already has a manager");
-                } else {newEmployee(response.role)}
-            });
-    }
-    fs.writeFile('./output/team.html', render(employeeList), (err) => 
-        err ? console.error(err) : console.log('team page created!'));
+    inquirer
+        .prompt(roleChoice)
+        .then(response => {
+            switch (response.role) {
+                case 'Finished Building Team':
+                    if (teamManaged === false) {
+                        console.log("\n This team has no manager yet");
+                        init();
+                    } else {
+                        fs.writeFile('./output/team.html', render(employeeList), (err) => 
+                            err ? console.error(err) : console.log('team page created!'));
+                    }
+                    break;
+                default:
+                    if (response.role === "Manager" && teamManaged === true) {
+                        console.log("\n This team already has a manager");
+                        init();
+                    } else {newEmployee(response.role)}
+            }
+        });
 }
 
 init();
