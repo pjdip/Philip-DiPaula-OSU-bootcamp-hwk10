@@ -112,8 +112,10 @@ function init() {
                         console.log("\n This team has no manager yet");
                         init();
                     } else {
-                        fs.writeFile('./output/team.html', render(employeeList), (err) => 
-                            err ? console.error(err) : console.log('team page created!'));
+/*                         fs.writeFile('./output/team.html', render(employeeList), (err) => 
+                            err ? console.error(err) : console.log('team page created!')); */
+                            fs.writeFile(outputPath, render(employeeList), (err) => 
+                                err ? console.error(err) : console.log('team page created!'));
                     }
                     break;
                 default:
