@@ -39,6 +39,8 @@ Special Thanks to Inquirer.js documentation:
 
 Thanks to [jest documentation](https://jestjs.io/docs/en/getting-started)
 
+Thanks to MDN for [switch documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch)
+
 Special Thanks to [ChilledCow](https://www.youtube.com/channel/UCSJ4gkVC6NrvII8umztf0Ow) for providing chill lofi beats to code to
 
 ## Badges
