@@ -15,28 +15,30 @@ let teamManaged = false;
 const employeeList = [];
 const roles = ["Manager", "Engineer", "Intern", "Finished Building Team"];
 
+// Questions for every employee, regardless of role
 const employeeBasics = [
     {
         type: 'input',
-        message: "What is the team member's name? ",
+        message: "What is the team member's name?",
         name: 'name',
     },
     {
         type: 'input',
-        message: "What is the team member's ID? ",
+        message: "What is the team member's ID?",
         name: 'id',
     },
     {
         type: 'input',
-        message: "What is the team member's email? ",
+        message: "What is the team member's email?",
         name: 'email',
     },
 ];
 
+// Unique questions dependent on employee role
 const managerInfo = [
     {
         type: 'input',
-        message: "What is the manager's office number? ",
+        message: "What is the manager's office number?",
         name: 'officeNumber',
     }
 ];
@@ -44,7 +46,7 @@ const managerInfo = [
 const engineerInfo = [
     {
         type: 'input',
-        message: "What is the engineer's github username? ",
+        message: "What is the engineer's github username?",
         name: 'github',
     }
 ];
@@ -52,26 +54,33 @@ const engineerInfo = [
 const internInfo = [
     {
         type: 'input',
-        message: "What is the intern's school's name? ",
+        message: "What is the intern's school's name?",
         name: 'school',
     }
 ];
 
+// Primary Inquirer Prompt
 const roleChoice = [
     {
         type: 'list',
-        message: '\n Please choose a new member role to add to your team:',
+        message: '\nPlease choose a new member role to add to your team:',
         choices: roles,
         name: 'role',
     }
 ];
 
-function newEmployee(role) {
+// Employee object factory function
+// Depending on the chosen role, we manipulate the questions array
+// Create the employee object and push it to the employee list
+// Then prompt for adding more employees
+const newEmployee = role => {
     if (role === "Manager") {
         const questions = employeeBasics.concat(managerInfo);
         inquirer
             .prompt(questions)
             .then(response => {
+
+                // set this tracker variable once the team has a manager
                 teamManaged = true;
                 const squadLeader = new Manager(response.name, response.id, response.email, response.officeNumber);
                 employeeList.push(squadLeader);
@@ -98,54 +107,44 @@ function newEmployee(role) {
     }
 }
 
-
-
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
+// This is the heavy lifting function of our application
+// It prompts the user to add members to the team until
+// There is at least a manager
 function init() {
     inquirer
+
+        // Prompt the user to choose a team member role or end team building
         .prompt(roleChoice)
         .then(response => {
             switch (response.role) {
+
+                // If user chooses to end team building, verify the team has a manager
                 case 'Finished Building Team':
+
+                    // Alert user if there is no manager and prompt for more team members
                     if (teamManaged === false) {
                         console.log("\n This team has no manager yet");
                         init();
+                    
+                    // If there is a manager, render all the employee info to html and create the team.html file
                     } else {
-/*                         fs.writeFile('./output/team.html', render(employeeList), (err) => 
-                            err ? console.error(err) : console.log('team page created!')); */
-                            fs.writeFile(outputPath, render(employeeList), (err) => 
-                                err ? console.error(err) : console.log('team page created!'));
+                        fs.writeFile(outputPath, render(employeeList), (err) => 
+                            err ? console.error(err) : console.log('team page created!'));
                     }
                     break;
+
+                // If user chooses an employee role
                 default:
+
+                    // Make sure there is only 1 manager
                     if (response.role === "Manager" && teamManaged === true) {
                         console.log("\n This team already has a manager");
                         init();
+
+                    // Generate a new employee object based on chosen role
                     } else {newEmployee(response.role)}
             }
         });
 }
 
 init();
-
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
